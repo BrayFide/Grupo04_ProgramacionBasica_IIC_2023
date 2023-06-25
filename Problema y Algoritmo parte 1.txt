@@ -1,0 +1,47 @@
+Problema: 
+Crear software que intente recrear la sensación de un casino real de alta gama, pero al alcance de cualquier usuario alrededor del mundo. Que cuente con un sistema de seguridad para el manejo correcto del dinero, que permita el registro de usuarios nuevos, juegos en linea y acceso a la configuración avanzada del sistema.
+
+
+Algoritmo:
+
+1- Definir funciones del menu: Registro de usuario nuevo, DreamWorld Casino, Configuracion avanzada y Salir
+
+2- Mostrar las funciones al usuario para que eliga la que desee
+
+3- Si el Usuario elige la funcion "Registro de usuario nuevo" 
+	1- Se deben cumplir las siguientes 2 condiciones para registrar el nombre de 		usuario
+
+		1.A- El nombre usuario debe ser mayor o igual a 5 caracteres
+				Si el el N.U es menor a 5 caracteres se imprime un 				error y el mensaje "El Nombre de usuario debe ser
+				mayor a 5 caracteres". 
+		1.B El nombre de usuario no debe estar previamente registrado
+			(Estructura del Sistema de Archivos y biblioteca os)
+	Si se genera una alerta el usuario tiene 3 intentos para agragar la 	informacion correcta, al fallar los 3 intentos vuelve al menu inical.
+	
+	2- Solicitar el nombre
+
+	3- Creacion de PIN
+		3.A- Solicitar al usuario un numero de maximo 6 digitos, este pin 		no debe ser visible al usuario, y se puede ingresar las veces 			necesarias hasta que sea valido.
+		
+		3.B- Volver a solicitar el PIN al usuario para autenticarlo, 			mostrar mensaje si no son iguales
+
+
+4- Proceso de depósito:
+	1- Obtener el monto mínimo de depósito del archivo de configuración avanzada.
+	2- Solicitar al usuario que realice un depósito en la moneda deseada (dólares, 	colones o bitcoin).
+	3- Realizar conversion de la moneda si es diferente a dolar
+	4- Verificar si el depósito cumple con el mínimo requerido:
+		Si el depósito es menor al mínimo, mostrar un mensaje de error y volver 		al paso 4.
+	5- Registrar el depósito en la cuenta asociada al usuario.
+	6- Dar al usuario hasta tres intentos para depositar el monto mínimo:
+		Si consume los tres intentos, mostrar un mensaje de alerta y volver al 			menú principal.                                     
+	7- Guardar la información del nuevo usuario y generar el sistema de carpetas y 		archivos asociados: 
+		Utilizar la biblioteca os para crear directorios y archivos.
+			Guardar la información del usuario en los archivos 					correspondientes.
+	8- Mostrar un mensaje de éxito y regresar al menú principal.
+
+
+
+Estructuras de Software:
+
+
