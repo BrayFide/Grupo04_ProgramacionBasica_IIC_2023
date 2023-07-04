@@ -50,7 +50,7 @@ Estructuras de Software:
 4-Funcion getpass
 
 
-C:\Users\braym\Desktop\Proyecto_progra
+
 
 
 
