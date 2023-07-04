@@ -16,12 +16,12 @@ Algoritmo:
 				mayor a 5 caracteres". 
 		1.B El nombre de usuario no debe estar previamente registrado
 			(Estructura del Sistema de Archivos y biblioteca os)
-	Si se genera una alerta el usuario tiene 3 intentos para agragar la 	informacion correcta, al fallar los 3 intentos vuelve al menu inical.
+	Si se genera una alerta el usuario tiene 3 intentos para agragar la informacion correcta, al fallar los 3 intentos vuelve al menu inical.
 	
 	2- Solicitar el nombre
 
 	3- Creacion de PIN
-		3.A- Solicitar al usuario un numero de maximo 6 digitos, este pin 		no debe ser visible al usuario, y se puede ingresar las veces 			necesarias hasta que sea valido.
+		3.A- Solicitar al usuario un numero de maximo 6 digitos, este pin no debe ser visible al usuario, y se puede ingresar las veces necesarias hasta que sea valido.
 		
 		3.B- Volver a solicitar el PIN al usuario para autenticarlo, 			mostrar mensaje si no son iguales
 
@@ -43,5 +43,29 @@ Algoritmo:
 
 
 Estructuras de Software:
+
+1- Funciones para cada opción del menú
+2- if, elif y Else
+3- Biblioteca os
+4-Funcion getpass
+
+
+C:\Users\braym\Desktop\Proyecto_progra
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
