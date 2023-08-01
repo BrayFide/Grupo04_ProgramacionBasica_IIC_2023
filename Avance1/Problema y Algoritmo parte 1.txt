@@ -47,7 +47,8 @@ Estructuras de Software:
 1- Funciones para cada opción del menú
 2- if, elif y Else
 3- Biblioteca os
-4-Funcion getpass
+4- Funcion getpass
+5- Comentarios
 
 
 

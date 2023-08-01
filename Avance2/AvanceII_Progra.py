@@ -207,9 +207,14 @@ def valoresDelSistema():
         deposito = str(input("Ingrese el monto minimo del Deposito\n"))
         fileDeposit = open("deposito.txt", "w")
         fileDeposit.write(deposito)
+<<<<<<< HEAD
         print ("El monto del deposto fué cambiado a {} correctamente".format(deposito))
         fileDeposit.close()
         menu_Principal()
+=======
+        print ("El monto del deposto fué cambiado a {} correctamente".format deposito)
+        fileDeposit.close()
+>>>>>>> a16b79a194b13e752778a45744c681877b212763
 
     elif opcion == "g":
         menu_Principal
