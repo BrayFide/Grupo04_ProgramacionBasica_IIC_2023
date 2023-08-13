@@ -5,10 +5,10 @@ import os
 
 
 #Creacion de Funciones
-#Funcion para el registro de usuario
+#Funcion para el registro de usuario (Aun en proceso)
 def registrar_usuario():
     intentos_max = 3
-    monto_minimo =  1000
+    monto_minimo =  open("deposito.txt", "r")
     intentos = 0
     while intentos < intentos_max:  #Estructura WHILE con estructura de desicion para identificar el numero de intentos
         usuario_id = input("Ingrese un nombre de usuario o ID: ")   #Se le solicita al usuario el ID
@@ -207,14 +207,9 @@ def valoresDelSistema():
         deposito = str(input("Ingrese el monto minimo del Deposito\n"))
         fileDeposit = open("deposito.txt", "w")
         fileDeposit.write(deposito)
-<<<<<<< HEAD
         print ("El monto del deposto fué cambiado a {} correctamente".format(deposito))
         fileDeposit.close()
         menu_Principal()
-=======
-        print ("El monto del deposto fué cambiado a {} correctamente".format deposito)
-        fileDeposit.close()
->>>>>>> a16b79a194b13e752778a45744c681877b212763
 
     elif opcion == "g":
         menu_Principal
