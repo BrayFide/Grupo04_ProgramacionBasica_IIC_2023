@@ -6,66 +6,101 @@ import os
 
 #Creacion de Funciones
 #Funcion para el registro de usuario (Aun en proceso)
+
+
 def registrar_usuario():
     intentos_max = 3
-    monto_minimo =  open("deposito.txt", "r")
+    file = open("deposito.txt", "r")  #Tener el valor del deposito
+    monto_minimo = int(file.read())
+    file.close()
     intentos = 0
-    while intentos < intentos_max:  #Estructura WHILE con estructura de desicion para identificar el numero de intentos
-        usuario_id = input("Ingrese un nombre de usuario o ID: ")   #Se le solicita al usuario el ID
+    
+    while intentos < intentos_max:
+        usuario_id = input("Ingrese un nombre de usuario o ID: ")
         if len(usuario_id) < 5:
             print("El ID debe tener al menos cinco caracteres.")
-        elif usuario_id in usuarios_registrados:
-            print("El ID ingresado ya está registrado.")
         else:
-            nombre = input("Ingrese su nombre: ")   #Solicitud de nombre
-            pin = getpass.getpass("Ingrese su PIN (mínimo 6 dígitos): ")   #Solicitar al usuario el pin y utilizar la biblioteca "getpass"
-            if len(pin) < 6:
-                print("El PIN debe tener al menos seis dígitos.")
+            usuariosRegistrados = f"{usuario_id}.txt" #Revisar si ya existe unarchivo con el nombre del usuario
+            if os.path.exists(usuariosRegistrados):
+                print("El usuario ya está registrado")
+                menu_Principal()
             else:
-                deposito = obtener_deposito_equivalente()
-                if deposito >= monto_minimo:
-                    usuarios_registrados[usuario_id] = {
-                        "nombre": nombre,
-                        "pin": pin,
-                        "saldo": deposito
-                    }
-                    print(f"Registro exitoso. ¡Bienvenido(a) {nombre} al DreamWorld Casino!")
-                    return
+                nombre = input("Ingrese su nombre: ")
+                pin = getpass.getpass("Ingrese su PIN (mínimo 6 dígitos): ")
+                if len(pin) < 6:
+                    print("El PIN debe tener al menos seis dígitos.")
                 else:
-                    print("El monto depositado es inferior al mínimo requerido. Intente nuevamente.")
-        intentos += 1
-        print(f"Tiene {intentos_max - intentos} intentos restantes.")
+                    deposito = float(input("Ingrese el monto que va a depositar: ")) #Cofirmacion deposito es suficiente
+                    if deposito >= monto_minimo:
+                        registroUsuario = open(usuariosRegistrados, "w") #Creacion del archivo usuario
+                        registroUsuario.write("Nombre de Usuario:  " + nombre + "\n")
+                        registroUsuario.write("Monto depositado:  "+str(deposito) + "\n")
+                        registroUsuario.write("Pin de seguridad:  "+ pin + "\n")
+                        registroUsuario.close()
+
+                        print(f"Registro exitoso. ¡Bienvenido(a) {nombre} al DreamWorld Casino!")
+                        return
+                    else:
+                        print("El monto depositado es inferior al mínimo requerido. Intente nuevamente.")
+                intentos += 1
+                print(f"Tiene {intentos_max - intentos} intentos restantes.")
 
     print("Se excedió el máximo de intentos para depositar el mínimo de dinero requerido, volviendo al menú principal.")
-#2.	Solicitar el nombre
 
-#3.	Creación de PIN:
-#a.	Solicitar al usuario un numero de máximo 6 dígitos, este pin no debe ser visible al usuario, y se puede ingresar las veces necesarias hasta que sea válido.
-#b.	Volver a solicitar el PIN al usuario para autenticarlo. 
-#c.	Mostrar mensaje si no son iguales
 
-#4.	Proceso de depósito:
-#a.	 Obtener el monto mínimo de depósito del archivo de configuración avanzada.
-#b.	Solicitar al usuario que realice un depósito en la moneda deseada (dólares, colones o bitcoin).
-#c.	Realizar conversión de la moneda si es diferente a dólar
-#d.	Verificar si el depósito cumple con el mínimo requerido:
-#e.	Si el depósito es menor al mínimo, mostrar un mensaje de error
-#f.	Registrar el depósito en la cuenta asociada al usuario.
-#g.	Dar al usuario hasta tres intentos para depositar el monto mínimo
-#h.	Si consume los tres intentos, mostrar un mensaje de alerta y volver al menú principal.
 
-#5.	Guardar la información del nuevo usuario y generar el sistema de carpetas y archivos asociados: 
-#a.	Utilizar la biblioteca os para crear directorios y archivos.
-#b.	Guardar la información del usuario en los archivos correspondientes.
-#c.	Mostrar un mensaje de éxito y regresar al menú principal.
-
-#6.	(Investigar Sistema de carpetas y archivos)
-
-#7.	Regresa al menú principal
 
 
 def dreamWorldCasino():
-    print ("Prueba 2")
+    
+    pinRegistrado = None
+    intentosMaxID = 3
+    intentosMaxPIN = 3
+    intentosID = 0
+    intentosPIN = 0
+    while intentosID < intentosMaxID:
+        userID= input ("Ingrese su nombre de usuario")
+        usuarioRegistrado = f"{userID}.txt"
+        if os.path.exists(usuarioRegistrado): #2.	Verificar que haya al menos un usuario registrado
+            while intentosPIN < intentosMaxPIN:
+                try:
+                    archivo = open(usuarioRegistrado, "r") 
+                    pinRegistrado = archivo.read() #1.	Cargar la información del usuario desde un archivo de texto
+                    archivo.close()
+                    solicitarPin = getpass.getpass(str("Ingrese su PIN \n"))
+                    if solicitarPin in pinRegistrado:
+                        print("Bienvenido")
+                        submenuDreamWorld(usuarioRegistrado)
+                        return
+
+                    else:
+                        print("Pin Incorrecto, trate de nuevo")
+                        intentosPIN += 1
+                        if intentosPIN == intentosMaxPIN:
+                            menu_Principal
+                    
+
+                except FileNotFoundError:
+                    print(f'El usuario "{userID}" no se encontró.')
+                    break       
+
+        else:
+            print("Usuario no encontrado. Vuelva a intentarlo")
+            intentosID += 1
+
+        if intentosID == intentosMaxID:
+            menu_Principal()
+
+
+
+
+def submenuDreamWorld(autenticado):
+    print
+ 
+    
+    
+
+
 #1.	Cargar la información del usuario desde un archivo de texto
 #2.	Verificar que haya al menos un usuario registrado
 #3.	Autenticar al usuario:
@@ -271,7 +306,15 @@ def menu_Principal():
         elif menuPrincipal == "d":
             print ("Gracias por visitar DreamWorld Casino")
             break
-        
+
+        elif menuPrincipal== "0":
+
+            file = open("deposito.txt", "r")
+            monto = int(file.read())
+            file.close()
+            print(monto)
+            break
+            
         else:
             print ("Opción no valida")
             break
