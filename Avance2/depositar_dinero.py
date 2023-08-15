@@ -6,8 +6,6 @@ def main():
     }
     intentosMaximos = 3  # Número máximo de intentos
 
-    print("Bienvenido al sistema de depósitos")
-
     for intento in range(1, intentosMaximos + 1):
         print(f"\nIntento {intento} de {intentosMaximos}")
         print("\nDivisas soportadas:")
@@ -25,6 +23,7 @@ def main():
         else:
             print("Opción inválida. Por favor, elija una opción válida.")
             continue
+
 
         monto = float(input(f"Ingrese el monto en {currency}: "))
         
