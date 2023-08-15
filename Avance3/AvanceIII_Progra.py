@@ -37,6 +37,9 @@ def registrar_usuario():
                         registroUsuario.write("Monto depositado:  "+str(deposito) + "\n")
                         registroUsuario.write("Pin de seguridad:  "+ pin + "\n")
                         registroUsuario.close()
+                        archivoDeposito = open(usuario_id+"deposito", "w")
+                        archivoDeposito.write(str(deposito))
+                        archivoDeposito.close()
 
                         print(f"Registro exitoso. ¡Bienvenido(a) {nombre} al DreamWorld Casino!")
                         return
@@ -70,14 +73,15 @@ def dreamWorldCasino():
                     solicitarPin = getpass.getpass(str("Ingrese su PIN \n"))
                     if solicitarPin in pinRegistrado:
                         print("Bienvenido")
-                        submenuDreamWorld(usuarioRegistrado)
+                        submenuDreamWorld(userID)
+
                         return
 
                     else:
                         print("Pin Incorrecto, trate de nuevo")
                         intentosPIN += 1
                         if intentosPIN == intentosMaxPIN:
-                            menu_Principal
+                            menu_Principal()
                     
 
                 except FileNotFoundError:
@@ -95,88 +99,34 @@ def dreamWorldCasino():
 
 
 def submenuDreamWorld(autenticado):
-    print
- 
+    while True:
+        print("Bienvenido al menú:")
+        print("a. Retirar Dinero")
+        print("b. Depositar Dinero")
+        print("c. Ver saldo actual")
+        print("d. Juegos en línea")
+        print("e. Eliminar usuario")
+        print("f. Salir")
+
+        opcion = input("Ingresa la letra correspondiente a la opción deseada: ").lower()
+
+        if opcion == 'a':
+            retirar_dinero()
+        elif opcion == 'b':
+            depositar_dinero()
+        elif opcion == 'c':
+            ver_saldo_actual()
+        elif opcion == 'd':
+            juegos_en_linea()
+        elif opcion == 'e':
+            eliminar_usuario()
+        elif opcion == 'f':
+            salir()
+        else:
+            print("Opción inválida. Por favor, ingresa una opción válida.")
     
     
-
-
-#1.	Cargar la información del usuario desde un archivo de texto
-#2.	Verificar que haya al menos un usuario registrado
-#3.	Autenticar al usuario:
-#a.	Solicitar ID
-#b.	Verificar que sea valido y que esté registrado
-#c.	Si es invalido
-#d.	Se da 3 intentos para ingresar un ID valido
-#e.	Si falla los 3 intentos vuelve al menú principal y se imprime un mensaje de error
-#f.	Si es valido
-#g.	Solicitar PIN
-#h.	Se da 3 intentos para ingresar PIN valido
-#i.	Si el PIN es invalido después de los 3 intentos se imprime mensaje de error
-#j.	Se devuelve al menú principal
-#k.	El PIN no debe ser visible
-
-#4.	Usuario Autenticado
-#a.	Imprimir mensaje de bienvenida
-#b.	Cagar toda la información del usuario desde archivos de texto
-
-
-
-#4.1	Submenú
-#1-	Crear funciones para el submenú
-#a.	Retirar Dinero
-#b.	Depositar Dinero
-#c.	Ver saldo actual
-#d.	Juegos en línea
-#e.	Eliminar usuario
-#f.	Salir
-
-#A-	Retirar dinero
-#1.	Imprimir saldo actual en la pantalla
-#2.	Preguntar cuánto dinero desea retirar
-#3.	Si el monto es mayor al saldo
-#a.	Imprimir mensaje de error
-#b.	Evitar transacción
-#c.	Después de 3 intentos fallidos se devuelve al menú principal
-#d.	Actualizar saldos de cada cuenta con el valor actual
-#4.	Si el monto es menor al saldo
-#a.	Se resta el monto del saldo
-#b.	Imprimir mensaje de confirmación de retiro
-#c.	Imprimir saldo actual
-#d.	Se regresa al Submenú
-
-#B-	Depositar Dinero
-#1.	Imprimir lista de divisas aceptadas
-#2.	Solicitar que tipo de divisa se va a usar
-#3.	Solicitar el monto a depositar
-#4.	Verificar que el monto sea positivo
-#5.	Imprimir mensaje de error si monto es negativo 
-#6.	Guardar valores para la conversión de divisas en un archivo
-#a.	Hacer conversión de colones a dólares
-#b.	Hacer conversión de bitcoins a dólares
-#c.	Agregar monto si se usan dólares
-#7.	Imprimir mensaje de confirmación de la transacción
-#8.	Imprimir el saldo actual
-#9.	Regresar al submenú
-
-#C-	Ver Saldo Actual
-#1.	Se imprime saldo actual en dólares
-#2.	Se regresa al submenú
-
-#D-	Juegos en línea
-#1.	Crear submenú con dos juegos
-#a.	Blackjack
-#b.	Tragamonedas
-#c.	Salir
-#2.	Preguntar a usuario que elija una opción
-
-#A.	Blackjack
-#1.	Mostrar instrucciones del juego
-
-
-
-#B.	Tragamonedas
-
+    
 
 
 
