@@ -3,8 +3,8 @@
 
 # Simulación de conversión de divisas
 conversorDivisas = { #En este caso se hace uso de un diccionario llamado conversorDivisas. Las llaves en este contexto se usan par definir llaves dentro del diccionario
-    "COL": 520,      # 1 dólar equivale a 520 colones
-    "BTC": 0.000034  # 1 dólar equivale a 0,000034 bitcoins
+    "COL": 1 / 520,     # 1 dólar equivale a 1/520 colones
+    "BTC": 0.000034     # 1 dólar equivale a 0.000034 bitcoins
 }
 
 saldoActual = 0   # Saldo inicial del usuario
@@ -31,24 +31,44 @@ def depositarDinero():   #Hacemos la declaracion de una funcion
 
         montoDeposito = float(input("Ingrese el monto a depositar: "))   #Solicitamos el monto que desea el usuario depositar
 
-        if montoDeposito <= 0:
-            print("El monto debe ser un valor positivo. Intente nuevamente.")
-            continue
+        def depositarDinero():
 
-        if monedaSeleccionada != "USD":
-            tasaConversion = conversorDivisas[monedaSeleccionada]   #Utiliza la variable monedaSeleccionada como clave para acceder al valor de conversión correspondiente en el diccionario conversorDivisas
-            montoDepositoUsd = montoDeposito / tasaConversion
-        else:
-            montoDepositoUsd = montoDeposito
+    if montoDeposito <= 0:
+        print("El monto debe ser un valor positivo. Intente nuevamente.")
+        continue
 
-        if montoDepositoUsd >= montoMinimo:   #Usamos el if para ver si el monto de deposito es igual al minimo podemos actualizar el saldo actual
+    if monedaSeleccionada == "COL":
+        tasaConversion = conversorDivisas[monedaSeleccionada]
+        montoDepositoUsd = montoDeposito * tasaConversion
+
+        if montoDepositoUsd >= montoMinimo:
             saldoActual += montoDepositoUsd
-            print(f"Depósito exitoso. Saldo actual: {saldoActual:.2f} dólares.")   #El : .2f se utiliza par hacer el redondeo a dos decimales
-            break   #Paramos la funcion si se cumple el if
+            print(f"Depósito exitoso. Saldo actual: {saldoActual:.2f} dólares.")
+            break
+        else:
+            print(f"El monto depositado en colones es inferior al mínimo requerido en dólares. Intento {intentosMax - _} restante(s).")
+
+    elif monedaSeleccionada == "BTC":
+        tasaConversion = conversorDivisas[monedaSeleccionada]
+        montoDepositoUsd = montoDeposito * tasaConversion
+
+        if montoDepositoUsd >= montoMinimo:
+            saldoActual += montoDepositoUsd
+            print(f"Depósito exitoso. Saldo actual: {saldoActual:.2f} dólares.")
+            break
+        else:
+            print(f"El monto depositado en bitcoins es inferior al mínimo requerido en dólares. Intento {intentosMax - _} restante(s).")
+
+    else:
+        montoDepositoUsd = montoDeposito
+
+        if montoDepositoUsd >= montoMinimo:
+            saldoActual += montoDepositoUsd
+            print(f"Depósito exitoso. Saldo actual: {saldoActual:.2f} dólares.")
+            break
         else:
             print(f"El monto depositado es inferior al mínimo requerido. Intento {intentosMax - _} restante(s).")
 
-    else:
-        print("Se excedió el máximo de intentos para depositar el mínimo de dinero requerido, volviendo al menú principal.")
+# ... (código posterior)
 
 depositarDinero()
