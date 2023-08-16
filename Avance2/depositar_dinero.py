@@ -1,54 +1,53 @@
-#Creacion del submenu para depositar dinero
-#By: Keivn Calvo
+def main():
+    balance = 0  # Saldo inicial en dólares
+    tasasDeCambio = {
+        "colones": 0.0017,  # Valor de 1 colón en dólares
+        "bitcoin": 26755   # Valor de 1 bitcoin en dólares
+    }
+    intentosMaximos = 3  # Número máximo de intentos
 
-# Simulación de conversión de divisas
-conversorDivisas = { #En este caso se hace uso de un diccionario llamado conversorDivisas. Las llaves en este contexto se usan par definir llaves dentro del diccionario
-    "COL": 520,      # 1 dólar equivale a 520 colones
-    "BTC": 0.000034  # 1 dólar equivale a 0,000034 bitcoins
-}
+    for intento in range(1, intentosMaximos + 1):
+        print(f"\nIntento {intento} de {intentosMaximos}")
+        print("\nDivisas soportadas:")
+        print("1. Colones")
+        print("2. Dólares")
+        print("3. Bitcoin")
+        option = input("¿En qué moneda desea depositar el dinero? ")
 
-saldoActual = 0   # Saldo inicial del usuario
-intentosMax = 3   # Máximo de intentos para depositar el monto mínimo
-montoMinimo = 3000  # Monto mínimo en dólares
-
-def depositarDinero():   #Hacemos la declaracion de una funcion
-    global saldoActual   #global se utiliza para indicar que la variable saldoActual se refiere a una variable definida fuera de la función, y no debe ser tratada como una variable local
-
-    print("Divisas soportadas:")
-    print("1. Colones")
-    print("2. Dólares")
-    print("3. Bitcoin")
-
-    for _ in range(intentosMax):   #Hacemos un bucle para intentos de depositar dinero (3 max).
-        opcionMoneda = int(input("¿En qué moneda desea depositar el dinero? "))
-
-        if opcionMoneda not in [1, 2, 3]:   #Hacemos uso de un if pero en este caso con un cambio que es el not in
-            print("Opción inválida. Intente nuevamente.")
+        if option == "1":
+            currency = "colones"
+        elif option == "2":
+            currency = "dólares"
+        elif option == "3":
+            currency = "bitcoin"
+        else:
+            print("Opción inválida. Por favor, elija una opción válida.")
             continue
 
-        monedas = {1: "COL", 2: "USD", 3: "BTC"}
-        monedaSeleccionada = monedas[opcionMoneda]
 
-        montoDeposito = float(input("Ingrese el monto a depositar: "))   #Solicitamos el monto que desea el usuario depositar
-
-        if montoDeposito <= 0:
-            print("El monto debe ser un valor positivo. Intente nuevamente.")
+        monto = float(input(f"Ingrese el monto en {currency}: "))
+        
+        if currency != "dólares":
+            tasaDeCambio = tasasDeCambio[currency]
+            montoEquivalente = monto * tasaDeCambio
+        else:
+            montoEquivalente = monto
+        
+        if montoEquivalente < 3000:
+            print("El monto debe ser al menos de 3000 dólares o su equivalente.")
+            if intento == intentosMaximos:
+                print("Límite de intentos alcanzado. Gracias por usar nuestro sistema.")
+                break
             continue
 
-        if monedaSeleccionada != "USD":
-            tasaConversion = conversorDivisas[monedaSeleccionada]   #Utiliza la variable monedaSeleccionada como clave para acceder al valor de conversión correspondiente en el diccionario conversorDivisas
-            montoDepositoUsd = montoDeposito / tasaConversion
-        else:
-            montoDepositoUsd = montoDeposito
+        balance += montoEquivalente
+        print("Transacción realizada de forma correcta.")
+        print(f"Saldo actual: {balance:.2f} dólares")
 
-        if montoDepositoUsd >= montoMinimo:   #Usamos el if para ver si el monto de deposito es igual al minimo podemos actualizar el saldo actual
-            saldoActual += montoDepositoUsd
-            print(f"Depósito exitoso. Saldo actual: {saldoActual:.2f} dólares.")   #El : .2f se utiliza par hacer el redondeo a dos decimales
-            break   #Paramos la funcion si se cumple el if
-        else:
-            print(f"El monto depositado es inferior al mínimo requerido. Intento {intentosMax - _} restante(s).")
+        subMenu = input("\n¿Desea realizar otra transacción? (s/n): ")
+        if subMenu.lower() != "s":
+            break
 
-    else:
-        print("Se excedió el máximo de intentos para depositar el mínimo de dinero requerido, volviendo al menú principal.")
+    print("¡Gracias por usar nuestro sistema de depósitos!")
 
-depositarDinero()
+main()

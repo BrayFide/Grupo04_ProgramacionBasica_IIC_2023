@@ -42,6 +42,7 @@ def registrar_usuario():
                         archivoDeposito.close()
 
                         print(f"Registro exitoso. ¡Bienvenido(a) {nombre} al DreamWorld Casino!")
+                        menu_Principal 
                         return
                     else:
                         print("El monto depositado es inferior al mínimo requerido. Intente nuevamente.")
@@ -111,24 +112,156 @@ def submenuDreamWorld(autenticado):
         opcion = input("Ingresa la letra correspondiente a la opción deseada: ").lower()
 
         if opcion == 'a':
-            retirar_dinero()
+            retirarDinero(autenticado)
         elif opcion == 'b':
-            depositar_dinero()
+            depositarDinero(autenticado)
         elif opcion == 'c':
-            ver_saldo_actual()
+            verSaldoActual(autenticado)
         elif opcion == 'd':
-            juegos_en_linea()
+            juegosEnLinea()
         elif opcion == 'e':
-            eliminar_usuario()
+            eliminarUsuario()
         elif opcion == 'f':
             salir()
         else:
             print("Opción inválida. Por favor, ingresa una opción válida.")
     
-    
-    
+# Simulación de conversión de divisas
+conversorDivisas = { #En este caso se hace uso de un diccionario llamado conversorDivisas. Las llaves en este contexto se usan par definir llaves dentro del diccionario
+    "COL": 520,      # 1 dólar equivale a 520 colones
+    "BTC": 0.000034  # 1 dólar equivale a 0,000034 bitcoins
+}
 
 
+
+saldoActual = 0
+intentosMax = 3   # Máximo de intentos para depositar el monto mínimo
+montoMinimo = 2000  # Monto mínimo en dólares
+
+def retirarDinero(autenticado):
+    global saldoActual
+    intentos = 3
+
+    try:
+        deposito = open(autenticado + "deposito", "r")
+        saldoActual = float(deposito.read())
+        deposito.close()
+    except FileNotFoundError:
+        print("Archivo de depósito no encontrado. Contacte al soporte.")
+        return
+
+    while intentos > 0:
+        try:
+            montoRetiro = float(input("Ingrese el monto que desea retirar: "))
+        except ValueError:
+            print("Por favor, ingrese un monto válido (número entero).")
+            continue
+
+        if montoRetiro <= 0:
+            print("El monto a retirar debe ser mayor que cero.")
+            continue
+
+        if montoRetiro > saldoActual:
+            intentos -= 1
+            print("Saldo insuficiente. Intentos restantes:", intentos)
+            if intentos == 0:
+                print("Has alcanzado el límite máximo de intentos fallidos.")
+                return
+        else:
+            saldoActual -= montoRetiro
+            print("Retiro exitoso. Saldo restante:", saldoActual)
+            # Guardar el nuevo saldo en el archivo de depósito
+            deposito = open(autenticado + "deposito", "w")
+            deposito.write(str(saldoActual))
+            deposito.close()
+            return
+
+
+def depositarDinero():   #Hacemos la declaracion de una funcion
+    global saldoActual   #global se utiliza para indicar que la variable saldoActual se refiere a una variable definida fuera de la función, y no debe ser tratada como una variable local
+
+    print("Divisas soportadas:")
+    print("1. Colones")
+    print("2. Dólares")
+    print("3. Bitcoin")
+
+    for _ in range(intentosMax):   #Hacemos un bucle para intentos de depositar dinero (3 max).
+        opcionMoneda = float(input("¿En qué moneda desea depositar el dinero? "))
+
+        if opcionMoneda not in [1, 2, 3]:   #Hacemos uso de un if pero en este caso con un cambio que es el not in
+            print("Opción inválida. Intente nuevamente.")
+            continue
+
+        monedas = {1: "COL", 2: "USD", 3: "BTC"}
+        monedaSeleccionada = monedas[opcionMoneda]
+
+        montoDeposito = int(input("Ingrese el monto a depositar: "))   #Solicitamos el monto que desea el usuario depositar
+
+        if montoDeposito <= 0:
+            print("El monto debe ser un valor positivo. Intente nuevamente.")
+            continue
+
+        if monedaSeleccionada != "USD":
+            tasaConversion = conversorDivisas[monedaSeleccionada]   #Utiliza la variable monedaSeleccionada como clave para acceder al valor de conversión correspondiente en el diccionario conversorDivisas
+            montoDepositoUsd = montoDeposito / tasaConversion
+        else:
+            montoDepositoUsd = montoDeposito
+
+        if montoDepositoUsd >= montoMinimo:   #Usamos el if para ver si el monto de deposito es igual al minimo podemos actualizar el saldo actual
+            saldoActual += montoDepositoUsd
+            print(f"Depósito exitoso. Saldo actual: {saldoActual:.2f} dólares.")   #El : .2f se utiliza par hacer el redondeo a dos decimales
+            break   #Paramos la funcion si se cumple el if
+        else:
+            print(f"El monto depositado es inferior al mínimo requerido. Intento {intentosMax - _} restante(s).")
+
+    else:
+        print("Se excedió el máximo de intentos para depositar el mínimo de dinero requerido, volviendo al menú principal.")
+
+
+def ver_saldo_actual(autenticado):
+    try:
+        archivo = open(autenticado+"deposito", "r")
+        deposito = archivo.read()
+        archivo.close()
+        print ("Su saldo actual es de ${}\n".format(deposito))
+        submenuDreamWorld(autenticado)
+    except FileNotFoundError:
+        print ("Archivo no encontrado")
+        submenuDreamWorld(autenticado)
+ 
+ 
+ 
+def menuJuegos(autenticado):   #Declaracion de el menu de juegos
+    while True:      #Usamos un while true para la eleccion de el juego
+        print("------ Juegos en línea ------")
+        print("1. Blackjack")
+        print("2. Tragamonedas")
+        print("3. Salir")
+ 
+        opcionJuego = input("Seleccione un juego (1-3): ")   #Solicitamos que juego desea jugar
+ 
+        if opcionJuego == "1":   #Hacemos uso del if para la esta estructura de desicion
+            jugarBlackjack()
+        elif opcionJuego == "2":
+            jugarTragamonedas()
+        elif opcionJuego == "3":
+            print("Gracias por jugar. ¡Hasta luego!")   #Usamos el print para que la persona elija salir del menu
+            submenuDreamWorld(autenticado)
+            break
+ 
+        else:
+            print("Opción inválida. Intente nuevamente.")   #Este print se presenta cuando el usuario no haga una eleccion correcta
+ 
+def jugarBlackjack():
+    # Codigo para el juego de Blackjack
+    print("Jugando Blackjack...")
+    # Aquí va la lógica del juego
+ 
+def jugarTragamonedas():
+    # Codigo para el juego de Tragamonedas
+    print("Jugando Tragamonedas...")
+    # Aquí va la lógica del juego
+    
 
 
 def configuracionAvanzada():
