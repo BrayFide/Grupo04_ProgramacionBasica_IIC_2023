@@ -42,6 +42,7 @@ def registrar_usuario():
                         archivoDeposito.close()
 
                         print(f"Registro exitoso. ¡Bienvenido(a) {nombre} al DreamWorld Casino!")
+                        menu_Principal()
                         return
                     else:
                         print("El monto depositado es inferior al mínimo requerido. Intente nuevamente.")
@@ -111,15 +112,15 @@ def submenuDreamWorld(autenticado):
         opcion = input("Ingresa la letra correspondiente a la opción deseada: ").lower()
 
         if opcion == 'a':
-            retirar_dinero()
+            retirar_dinero(autenticado)
         elif opcion == 'b':
-            depositar_dinero()
+            depositar_dinero(autenticado)
         elif opcion == 'c':
-            ver_saldo_actual()
+            ver_saldo_actual(autenticado)
         elif opcion == 'd':
-            juegos_en_linea()
+            menuJuegos(autenticado)
         elif opcion == 'e':
-            eliminar_usuario()
+            eliminar_usuario(autenticado)
         elif opcion == 'f':
             salir()
         else:
@@ -127,6 +128,51 @@ def submenuDreamWorld(autenticado):
     
     
     
+def ver_saldo_actual(autenticado):
+    try:
+        archivo = open(autenticado+"deposito", "r")
+        deposito = archivo.read()
+        archivo.close()
+        print ("Su saldo actual es de ${}\n".format(deposito))
+        submenuDreamWorld(autenticado)
+    except FileNotFoundError:
+        print ("Archivo no encontrado")
+        submenuDreamWorld(autenticado)
+
+
+
+def menuJuegos(autenticado):   #Declaracion de el menu de juegos
+    while True:      #Usamos un while true para la eleccion de el juego
+        print("------ Juegos en línea ------")
+        print("1. Blackjack")
+        print("2. Tragamonedas")
+        print("3. Salir")
+
+        opcionJuego = input("Seleccione un juego (1-3): ")   #Solicitamos que juego desea jugar
+
+        if opcionJuego == "1":   #Hacemos uso del if para la esta estructura de desicion
+            jugarBlackjack()
+        elif opcionJuego == "2":
+            jugarTragamonedas()
+        elif opcionJuego == "3":
+            print("Gracias por jugar. ¡Hasta luego!")   #Usamos el print para que la persona elija salir del menu
+            submenuDreamWorld(autenticado)
+            break
+
+        else:
+            print("Opción inválida. Intente nuevamente.")   #Este print se presenta cuando el usuario no haga una eleccion correcta
+
+def jugarBlackjack():
+    # Codigo para el juego de Blackjack
+    print("Jugando Blackjack...")
+    # Aquí va la lógica del juego
+
+def jugarTragamonedas():
+    # Codigo para el juego de Tragamonedas
+    print("Jugando Tragamonedas...")
+    # Aquí va la lógica del juego
+
+
 
 
 
