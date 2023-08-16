@@ -167,10 +167,10 @@ def jugarBlackjack():
     print("Jugando Blackjack...")
     # Aquí va la lógica del juego
 
-def jugarTragamonedas():
-    # Codigo para el juego de Tragamonedas
-    print("Jugando Tragamonedas...")
-    # Aquí va la lógica del juego
+    else:
+        print("Se excedió el máximo de intentos para depositar el mínimo de dinero requerido, volviendo al menú principal.")
+
+
 
     
 
