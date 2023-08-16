@@ -42,7 +42,6 @@ def registrar_usuario():
                         archivoDeposito.close()
 
                         print(f"Registro exitoso. ¡Bienvenido(a) {nombre} al DreamWorld Casino!")
-                        menu_Principal()
                         return
                     else:
                         print("El monto depositado es inferior al mínimo requerido. Intente nuevamente.")
@@ -172,9 +171,7 @@ def jugarTragamonedas():
     print("Jugando Tragamonedas...")
     # Aquí va la lógica del juego
 
-
-
-
+    
 
 
 def configuracionAvanzada():
