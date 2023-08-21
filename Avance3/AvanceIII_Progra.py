@@ -134,7 +134,7 @@ conversorDivisas = { #En este caso se hace uso de un diccionario llamado convers
 
 
 
-saldoActual = 0
+
 intentosMax = 3   # Máximo de intentos para depositar el monto mínimo
 montoMinimo = 2000  # Monto mínimo en dólares
 
@@ -177,48 +177,67 @@ def retirarDinero(autenticado):
             return
 
 
-def depositarDinero():   #Hacemos la declaracion de una funcion
-    global saldoActual   #global se utiliza para indicar que la variable saldoActual se refiere a una variable definida fuera de la función, y no debe ser tratada como una variable local
+def depositarDinero(autenticado):
+    global saldoActual
+
+    try:
+        deposito = open(autenticado + "deposito", "r")
+        saldoActual = float(deposito.read())
+        deposito.close()
+    except FileNotFoundError:
+        print("Archivo de depósito no encontrado. Contacte al soporte.")
+        return
+
+    conversorDivisas = {"COL": 544, "BTC": 0.000034, "USD": 1.0}
 
     print("Divisas soportadas:")
-    print("1. Colones")
-    print("2. Dólares")
-    print("3. Bitcoin")
+    for i, (moneda, valor) in enumerate(conversorDivisas.items(), start=1):
+        print(f"{i}. {moneda} (Tasa: {valor:.6f})")
 
-    for _ in range(intentosMax):   #Hacemos un bucle para intentos de depositar dinero (3 max).
-        opcionMoneda = float(input("¿En qué moneda desea depositar el dinero? "))
+    while True:
+        try:
+            opcionMoneda = int(input("¿En qué moneda desea depositar el dinero? "))
+            if opcionMoneda in range(1, len(conversorDivisas) + 1):
+                break
+            else:
+                print("Opción inválida. Intente nuevamente.")
+        except ValueError:
+            print("Ingrese un número válido.")
 
-        if opcionMoneda not in [1, 2, 3]:   #Hacemos uso de un if pero en este caso con un cambio que es el not in
-            print("Opción inválida. Intente nuevamente.")
-            continue
+    monedas = list(conversorDivisas.keys())
+    monedaSeleccionada = monedas[opcionMoneda - 1]
 
-        monedas = {1: "COL", 2: "USD", 3: "BTC"}
-        monedaSeleccionada = monedas[opcionMoneda]
+    montoDeposito = float(input("Ingrese el monto a depositar: "))
 
-        montoDeposito = int(input("Ingrese el monto a depositar: "))   #Solicitamos el monto que desea el usuario depositar
+    if montoDeposito <= 0:
+        print("El monto debe ser un valor positivo. Intente nuevamente.")
+        return
 
-        if montoDeposito <= 0:
-            print("El monto debe ser un valor positivo. Intente nuevamente.")
-            continue
+    tasaConversion = conversorDivisas[monedaSeleccionada]
+    montoDepositoUsd = montoDeposito / tasaConversion
 
-        if monedaSeleccionada != "USD":
-            tasaConversion = conversorDivisas[monedaSeleccionada]   #Utiliza la variable monedaSeleccionada como clave para acceder al valor de conversión correspondiente en el diccionario conversorDivisas
-            montoDepositoUsd = montoDeposito / tasaConversion
-        else:
-            montoDepositoUsd = montoDeposito
+    if montoDepositoUsd >= montoMinimo:
+        saldoActual += montoDepositoUsd
 
-        if montoDepositoUsd >= montoMinimo:   #Usamos el if para ver si el monto de deposito es igual al minimo podemos actualizar el saldo actual
-            saldoActual += montoDepositoUsd
-            print(f"Depósito exitoso. Saldo actual: {saldoActual:.2f} dólares.")   #El : .2f se utiliza par hacer el redondeo a dos decimales
-            break   #Paramos la funcion si se cumple el if
-        else:
-            print(f"El monto depositado es inferior al mínimo requerido. Intento {intentosMax - _} restante(s).")
+        archivoDeposito = open(autenticado + "deposito", "w")
+        archivoDeposito.write(str(saldoActual))
+        archivoDeposito.close()
 
+        print(f"Depósito exitoso. Saldo actual: {saldoActual:.2f} dólares.")
     else:
-        print("Se excedió el máximo de intentos para depositar el mínimo de dinero requerido, volviendo al menú principal.")
+        print(f"El monto depositado es inferior al mínimo requerido.")
 
 
-def ver_saldo_actual(autenticado):
+    # Actualizar valores de conversión en el diccionario y archivo
+    conversorDivisas[monedaSeleccionada] = tasaConversion
+    with open("conversor_divisas.txt", "w") as conversor_file:
+        for moneda, valor in conversorDivisas.items():
+            conversor_file.write(f"{moneda}:{valor}\n")
+
+
+
+
+def verSaldoActual(autenticado):
     try:
         archivo = open(autenticado+"deposito", "r")
         deposito = archivo.read()
