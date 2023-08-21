@@ -118,25 +118,14 @@ def submenuDreamWorld(autenticado):
         elif opcion == 'c':
             verSaldoActual(autenticado)
         elif opcion == 'd':
-            juegosEnLinea()
+            menuJuegos(autenticado)
         elif opcion == 'e':
-            eliminarUsuario()
+            eliminarUsuario(autenticado)
         elif opcion == 'f':
             salir()
         else:
             print("Opción inválida. Por favor, ingresa una opción válida.")
     
-# Simulación de conversión de divisas
-conversorDivisas = { #En este caso se hace uso de un diccionario llamado conversorDivisas. Las llaves en este contexto se usan par definir llaves dentro del diccionario
-    "COL": 520,      # 1 dólar equivale a 520 colones
-    "BTC": 0.000034  # 1 dólar equivale a 0,000034 bitcoins
-}
-
-
-
-saldoActual = 0
-intentosMax = 3   # Máximo de intentos para depositar el monto mínimo
-montoMinimo = 2000  # Monto mínimo en dólares
 
 def retirarDinero(autenticado):
     global saldoActual
@@ -218,8 +207,8 @@ def depositarDinero():   #Hacemos la declaracion de una funcion
         print("Se excedió el máximo de intentos para depositar el mínimo de dinero requerido, volviendo al menú principal.")
 
 
-def ver_saldo_actual(autenticado):
-    try:
+def verSaldoActual(autenticado):
+    try: 
         archivo = open(autenticado+"deposito", "r")
         deposito = archivo.read()
         archivo.close()
