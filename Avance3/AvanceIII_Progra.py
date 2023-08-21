@@ -125,7 +125,7 @@ def submenuDreamWorld(autenticado):
             salir()
         else:
             print("Opción inválida. Por favor, ingresa una opción válida.")
-    
+
 
 def retirarDinero(autenticado):
     global saldoActual
@@ -356,8 +356,16 @@ def salir():
 #---------------------------------------Programa Principal--------------------------------#
 
 def menu_Principal():
+
     
-    menuPrincipal = input("Seleccione una opción\na.Registro de usuario nuevo\nb.DreamWorld Casino\nc.Configuración avanzada\nd.Salir\nSu respuesta:  ")
+    if os.path.exists("deposito.txt"):
+       menuPrincipal = input("Seleccione una opción\na.Registro de usuario nuevo\nb.DreamWorld Casino\nc.Configuración avanzada\nd.Salir\nSu respuesta:  ")
+    else: 
+        fileDeposit = open("deposito.txt", "w")
+        fileDeposit.write("1000")
+        fileDeposit.close()
+
+        menuPrincipal = input("Seleccione una opción\na.Registro de usuario nuevo\nb.DreamWorld Casino\nc.Configuración avanzada\nd.Salir\nSu respuesta:  ")
 
     while True:
         
