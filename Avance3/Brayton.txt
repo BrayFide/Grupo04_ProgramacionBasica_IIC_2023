@@ -1,0 +1,16 @@
+Brayton
+123456
+
+Jroge
+12345
+
+Consultas
+DOnde se guarda el documento
+Archivos
+actualizacion del documento
+return del menu principal
+brayton
+
+
+deposito
+Empazar blackjack

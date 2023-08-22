@@ -42,7 +42,7 @@ def registrar_usuario():
                         archivoDeposito.close()
 
                         print(f"Registro exitoso. ¡Bienvenido(a) {nombre} al DreamWorld Casino!")
-                        menu_Principal 
+                        menu_Principal() 
                         return
                     else:
                         print("El monto depositado es inferior al mínimo requerido. Intente nuevamente.")
@@ -118,25 +118,15 @@ def submenuDreamWorld(autenticado):
         elif opcion == 'c':
             verSaldoActual(autenticado)
         elif opcion == 'd':
-            juegosEnLinea()
+            menuJuegos(autenticado)
         elif opcion == 'e':
-            eliminarUsuario()
+            eliminarUsuario(autenticado)
         elif opcion == 'f':
             salir()
         else:
             print("Opción inválida. Por favor, ingresa una opción válida.")
-    
-# Simulación de conversión de divisas
-conversorDivisas = { #En este caso se hace uso de un diccionario llamado conversorDivisas. Las llaves en este contexto se usan par definir llaves dentro del diccionario
-    "COL": 520,      # 1 dólar equivale a 520 colones
-    "BTC": 0.000034  # 1 dólar equivale a 0,000034 bitcoins
-}
 
 
-
-
-intentosMax = 3   # Máximo de intentos para depositar el monto mínimo
-montoMinimo = 2000  # Monto mínimo en dólares
 
 def retirarDinero(autenticado):
     global saldoActual
@@ -238,7 +228,8 @@ def depositarDinero(autenticado):
 
 
 def verSaldoActual(autenticado):
-    try:
+
+    try: 
         archivo = open(autenticado+"deposito", "r")
         deposito = archivo.read()
         archivo.close()
@@ -386,8 +377,16 @@ def salir():
 #---------------------------------------Programa Principal--------------------------------#
 
 def menu_Principal():
+
     
-    menuPrincipal = input("Seleccione una opción\na.Registro de usuario nuevo\nb.DreamWorld Casino\nc.Configuración avanzada\nd.Salir\nSu respuesta:  ")
+    if os.path.exists("deposito.txt"):
+       menuPrincipal = input("Seleccione una opción\na.Registro de usuario nuevo\nb.DreamWorld Casino\nc.Configuración avanzada\nd.Salir\nSu respuesta:  ")
+    else: 
+        fileDeposit = open("deposito.txt", "w")
+        fileDeposit.write("1000")
+        fileDeposit.close()
+
+        menuPrincipal = input("Seleccione una opción\na.Registro de usuario nuevo\nb.DreamWorld Casino\nc.Configuración avanzada\nd.Salir\nSu respuesta:  ")
 
     while True:
         
