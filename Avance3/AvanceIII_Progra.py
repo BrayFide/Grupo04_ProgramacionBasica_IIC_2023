@@ -3,6 +3,7 @@
 import getpass
 import os
 import random
+import time
 
 #Creacion de Funciones
 #Funcion para el registro de usuario (Aun en proceso)
@@ -178,11 +179,12 @@ def depositarDinero(autenticado):
         print("Archivo de depósito no encontrado. Contacte al soporte.")
         return
 
-    conversorDivisas = {"COL": 544, "BTC": 0.000034, "USD": 1.0}
+    conversorDivisas = {}  # Movido aquí
 
-    print("Divisas soportadas:")
-    for i, (moneda, valor) in enumerate(conversorDivisas.items(), start=1):
-        print(f"{i}. {moneda} (Tasa: {valor:.6f})")
+    with open("conversorDeDivisas.txt", "r") as conversor_file:  # Corrección en el nombre del archivo
+        for line in conversor_file:
+            moneda, valor = line.strip().split(":")
+            conversorDivisas[moneda] = float(valor)
 
     while True:
         try:
@@ -206,7 +208,9 @@ def depositarDinero(autenticado):
     tasaConversion = conversorDivisas[monedaSeleccionada]
     montoDepositoUsd = montoDeposito / tasaConversion
 
-    if montoDepositoUsd >= montoMinimo:
+    file = open("deposito.txt", "r")  #Tener el valor del deposito
+    monto_minimo = int(file.read())
+    if montoDepositoUsd >= monto_minimo:
         saldoActual += montoDepositoUsd
 
         archivoDeposito = open(autenticado + "deposito", "w")
@@ -216,6 +220,12 @@ def depositarDinero(autenticado):
         print(f"Depósito exitoso. Saldo actual: {saldoActual:.2f} dólares.")
     else:
         print(f"El monto depositado es inferior al mínimo requerido.")
+    
+    # Actualizar valores de conversión en el diccionario y archivo
+    conversorDivisas[monedaSeleccionada] = tasaConversion
+    with open("conversorDeDivisas.txt", "w") as conversor_file:
+        for moneda, valor in conversorDivisas.items():
+            conversor_file.write(f"{moneda}:{valor}\n")
 
 
     # Actualizar valores de conversión en el diccionario y archivo
@@ -295,12 +305,24 @@ def blackjack(autenticado):
         
 
     while True:
-            if depositoUsuario > apuestaMinima:
+            if depositoUsuario >= apuestaMinima:
                 apuestaInicial = float(input("Ingrese el monto que quiere apostar"))
                 print ("Repartiendo cartas")
-                repartirCartas()
+                
+                while True:
+                    if apuestaInicial >= apuestaMinima:
+                        depositoUsuario -= apuestaInicial
+                        archivo = open(autenticado+"deposito", "w")
+                        archivo.write(str(depositoUsuario))
+                        archivo.close()
+                        repartirCartas(autenticado)
+                        break
+                    else:
+                        print("El monto minimo a apostar es de ${}".format(apuestaMinima))
+                        blackjack(autenticado)
+                        break
 
-                break
+                
 
             elif depositoUsuario < apuestaMinima:
                 print("saldo Insuficiente, usted tiene ${}, y ocupa como minimo ${} para poder jugar, haga un deposito en su cuenta".format(depositoUsuario , apuestaMinima))
@@ -344,25 +366,29 @@ def elejirCartaOculta():
     resultadoDos = random.choice(tipoNaipe)
     return (resultadoUno, resultadoDos)
 
-def repartirCartas():
+def repartirCartas(usuarioAu):
     usuario = []
     crupier = []
 
     for i in range(2):
 
-        print("Usuario:")
+        print(usuarioAu+":")
+        time.sleep(1.5)
         usuario.append(elejirCarta())
 
         print("Crupier:")
+        time.sleep(1.5)
         if i == 0:
             crupier.append(elejirCarta())
         else:
+            time.sleep(1.5)
             crupier.append(elejirCartaOculta())
             print("Carta Oculta")
 
+    return(usuario,crupier)
 
-    print (usuario)
-    print (crupier)
+
+    
      
      
 
