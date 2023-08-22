@@ -2,7 +2,7 @@
 
 import getpass
 import os
-
+import random
 
 #Creacion de Funciones
 #Funcion para el registro de usuario (Aun en proceso)
@@ -37,7 +37,7 @@ def registrar_usuario():
                         registroUsuario.write("Monto depositado:  "+str(deposito) + "\n")
                         registroUsuario.write("Pin de seguridad:  "+ pin + "\n")
                         registroUsuario.close()
-                        archivoDeposito = open(usuario_id+"deposito", "w")
+                        archivoDeposito = open(usuario_id+"deposito.", "w")
                         archivoDeposito.write(str(deposito))
                         archivoDeposito.close()
 
@@ -251,7 +251,7 @@ def menuJuegos(autenticado):   #Declaracion de el menu de juegos
         opcionJuego = input("Seleccione un juego (1-3): ")   #Solicitamos que juego desea jugar
  
         if opcionJuego == "1":   #Hacemos uso del if para la esta estructura de desicion
-            jugarBlackjack()
+            blackjack(autenticado)
         elif opcionJuego == "2":
             jugarTragamonedas()
         elif opcionJuego == "3":
@@ -262,10 +262,110 @@ def menuJuegos(autenticado):   #Declaracion de el menu de juegos
         else:
             print("Opción inválida. Intente nuevamente.")   #Este print se presenta cuando el usuario no haga una eleccion correcta
  
-def jugarBlackjack():
-    # Codigo para el juego de Blackjack
-    print("Jugando Blackjack...")
-    # Aquí va la lógica del juego
+def blackjack(autenticado):
+    
+    try: 
+        archivo = open(autenticado+"deposito", "r")
+        contDeposito = archivo.read()
+        archivo.close()
+        depositoUsuario = float(contDeposito)
+
+    except FileNotFoundError:
+        print ("Archivo no encontrado")
+        submenuDreamWorld(autenticado)    
+
+
+    if os.path.exists("apuestaMinima.txt"):
+        print("Instrucciones")
+        fileapuesta = open("apuestaMinima.txt", "r")
+        contApuesta = fileapuesta.read()
+        fileapuesta.close()
+        apuestaMinima = float(contApuesta)
+        
+    else: 
+        fileapuesta = open("apuestaMinima.txt", "w")
+        fileapuesta.write("25")
+        fileapuesta.close()
+        fileapuesta = open("apuestaMinima.txt", "r")
+        contApuesta = fileapuesta.read()
+        fileapuesta.close()
+        apuestaMinima = float(contApuesta)
+        
+        print("Instrucciones")
+        
+
+    while True:
+            if depositoUsuario > apuestaMinima:
+                apuestaInicial = float(input("Ingrese el monto que quiere apostar"))
+                print ("Repartiendo cartas")
+                repartirCartas()
+
+                break
+
+            elif depositoUsuario < apuestaMinima:
+                print("saldo Insuficiente, usted tiene ${}, y ocupa como minimo ${} para poder jugar, haga un deposito en su cuenta".format(depositoUsuario , apuestaMinima))
+                submenuDreamWorld(autenticado)
+                break
+
+def elejirCarta():
+    
+    valorCartas = [1,2,3,4,5,6,7,8,9,10,11,12,13]
+    tipoNaipe = ["Trebol", "Diamante", "Corazones", "Espadas"]
+
+    for _ in range(1):
+        resultadoUno = random.choice(valorCartas)
+        resultadoDos = random.choice(tipoNaipe)
+    
+
+    if resultadoUno == 11:
+        valorCarta = "J"
+    elif resultadoUno == 12:
+        valorCarta = "Q"
+    elif resultadoUno == 13:
+        valorCarta = "K"
+    else:
+        valorCarta = resultadoUno
+    
+    if resultadoDos in ["Diamante", "Corazones"]:
+    
+        print("\033[91mCarta {} de {}\033[0m".format(valorCarta, resultadoDos))
+    else:
+        # Imprime en color normal
+        print("Carta {} de {}".format(valorCarta, resultadoDos))
+
+    return (valorCarta, resultadoDos)
+    
+def elejirCartaOculta():
+    
+    valorCartas = [1,2,3,4,5,6,7,8,9,10,11,12,13]
+    tipoNaipe = ["Trebol", "Diamante", "Corazones", "Espadas"]
+
+    resultadoUno = random.choice(valorCartas)
+    resultadoDos = random.choice(tipoNaipe)
+    return (resultadoUno, resultadoDos)
+
+def repartirCartas():
+    usuario = []
+    crupier = []
+
+    for i in range(2):
+
+        print("Usuario:")
+        usuario.append(elejirCarta())
+
+        print("Crupier:")
+        if i == 0:
+            crupier.append(elejirCarta())
+        else:
+            crupier.append(elejirCartaOculta())
+            print("Carta Oculta")
+
+
+    print (usuario)
+    print (crupier)
+     
+     
+
  
 def jugarTragamonedas():
     # Codigo para el juego de Tragamonedas
@@ -418,7 +518,7 @@ def menu_Principal():
             
         else:
             print ("Opción no valida")
-            break
+            menu_Principal()
 
 print (menu_Principal())
     
