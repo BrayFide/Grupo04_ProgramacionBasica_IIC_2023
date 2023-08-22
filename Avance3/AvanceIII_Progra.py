@@ -42,7 +42,7 @@ def registrar_usuario():
                         archivoDeposito.close()
 
                         print(f"Registro exitoso. ¡Bienvenido(a) {nombre} al DreamWorld Casino!")
-                        menu_Principal 
+                        menu_Principal() 
                         return
                     else:
                         print("El monto depositado es inferior al mínimo requerido. Intente nuevamente.")
