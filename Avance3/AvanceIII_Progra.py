@@ -2,7 +2,8 @@
 
 import getpass
 import os
-
+import random
+import time
 
 #Creacion de Funciones
 #Funcion para el registro de usuario (Aun en proceso)
