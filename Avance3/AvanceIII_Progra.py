@@ -7,6 +7,10 @@ import os
 #Creacion de Funciones
 #Funcion para el registro de usuario (Aun en proceso)
 
+if not os.path.exists("deposito.txt"):
+    with open("deposito.txt", "w") as deposito_file:
+        deposito_file.write("2000")  
+
 
 def registrar_usuario():
     intentos_max = 3
@@ -14,6 +18,8 @@ def registrar_usuario():
     monto_minimo = int(file.read())
     file.close()
     intentos = 0
+
+    
     
     while intentos < intentos_max:
         usuario_id = input("Ingrese un nombre de usuario o ID: ")
@@ -126,17 +132,9 @@ def submenuDreamWorld(autenticado):
         else:
             print("Opción inválida. Por favor, ingresa una opción válida.")
     
-# Simulación de conversión de divisas
-conversorDivisas = { #En este caso se hace uso de un diccionario llamado conversorDivisas. Las llaves en este contexto se usan par definir llaves dentro del diccionario
-    "COL": 520,      # 1 dólar equivale a 520 colones
-    "BTC": 0.000034  # 1 dólar equivale a 0,000034 bitcoins
-}
 
 
 
-
-intentosMax = 3   # Máximo de intentos para depositar el monto mínimo
-montoMinimo = 2000  # Monto mínimo en dólares
 
 def retirarDinero(autenticado):
     global saldoActual
@@ -188,51 +186,60 @@ def depositarDinero(autenticado):
         print("Archivo de depósito no encontrado. Contacte al soporte.")
         return
 
-    conversorDivisas = {"COL": 544, "BTC": 0.000034, "USD": 1.0}
+    conversorDivisas = {}
 
-    print("Divisas soportadas:")
-    for i, (moneda, valor) in enumerate(conversorDivisas.items(), start=1):
-        print(f"{i}. {moneda} (Tasa: {valor:.6f})")
+    with open("conversorDeDivisas.txt", "r") as conversor_file:
+        for line in conversor_file:
+            moneda, valor = line.strip().split(":")
+            conversorDivisas[moneda] = float(valor)
+
+    print("Monedas disponibles:")
+    opcionesMoneda = list(conversorDivisas.keys())
+    for i, moneda in enumerate(opcionesMoneda, start=1):
+        print(f"{i}. {moneda}")
 
     while True:
         try:
             opcionMoneda = int(input("¿En qué moneda desea depositar el dinero? "))
-            if opcionMoneda in range(1, len(conversorDivisas) + 1):
+            if opcionMoneda in range(1, len(opcionesMoneda) + 1):
                 break
             else:
                 print("Opción inválida. Intente nuevamente.")
         except ValueError:
             print("Ingrese un número válido.")
 
-    monedas = list(conversorDivisas.keys())
-    monedaSeleccionada = monedas[opcionMoneda - 1]
-
-    montoDeposito = float(input("Ingrese el monto a depositar: "))
-
-    if montoDeposito <= 0:
-        print("El monto debe ser un valor positivo. Intente nuevamente.")
-        return
+    monedaSeleccionada = opcionesMoneda[opcionMoneda - 1]
+    
+    while True:
+        try:
+            montoDeposito = float(input("Ingrese el monto a depositar: "))
+            if montoDeposito <= 0:
+                print("El monto debe ser mayor a 0. Intente nuevamente.")
+            else:
+                break
+        except ValueError:
+            print("Ingrese un monto válido.")
 
     tasaConversion = conversorDivisas[monedaSeleccionada]
     montoDepositoUsd = montoDeposito / tasaConversion
 
-    if montoDepositoUsd >= montoMinimo:
-        saldoActual += montoDepositoUsd
+    saldoActual += montoDepositoUsd
 
-        archivoDeposito = open(autenticado + "deposito", "w")
-        archivoDeposito.write(str(saldoActual))
-        archivoDeposito.close()
+    archivoDeposito = open(autenticado + "deposito", "w")
+    archivoDeposito.write(str(saldoActual))
+    archivoDeposito.close()
 
-        print(f"Depósito exitoso. Saldo actual: {saldoActual:.2f} dólares.")
-    else:
-        print(f"El monto depositado es inferior al mínimo requerido.")
-
+    print(f"Depósito exitoso en {monedaSeleccionada}. Saldo actual: {saldoActual:.2f} dólares.")
 
     # Actualizar valores de conversión en el diccionario y archivo
     conversorDivisas[monedaSeleccionada] = tasaConversion
-    with open("conversor_divisas.txt", "w") as conversor_file:
+    with open("conversorDeDivisas.txt", "w") as conversor_file:
         for moneda, valor in conversorDivisas.items():
             conversor_file.write(f"{moneda}:{valor}\n")
+
+
+
+
 
 
 
@@ -423,13 +430,6 @@ def menu_Principal():
 
 print (menu_Principal())
     
-
-
-
-
-
-
-
 
 
 
