@@ -2,7 +2,8 @@
 
 import getpass
 import os
-
+import time
+import random
 
 #Creacion de Funciones
 #Funcion para el registro de usuario (Aun en proceso)
@@ -253,7 +254,7 @@ def menuJuegos(autenticado):   #Declaracion de el menu de juegos
         if opcionJuego == "1":   #Hacemos uso del if para la esta estructura de desicion
             jugarBlackjack()
         elif opcionJuego == "2":
-            jugarTragamonedas()
+            jugarTragamonedas(autenticado)
         elif opcionJuego == "3":
             print("Gracias por jugar. ¡Hasta luego!")   #Usamos el print para que la persona elija salir del menu
             submenuDreamWorld(autenticado)
@@ -267,12 +268,116 @@ def jugarBlackjack():
     print("Jugando Blackjack...")
     # Aquí va la lógica del juego
  
-def jugarTragamonedas():
-    # Codigo para el juego de Tragamonedas
-    print("Jugando Tragamonedas...")
-    # Aquí va la lógica del juego
-    
+# Definición de las figuras y sus premios
+figuras = ['@', '#', '+', '7']   #Se define la variable de figuras que va a contener el juego  y los premios
+premios = {'@': 1, '#': 2, '+': 3, '7': 0}  # 0 representa el acumulado
 
+def mostrarInstrucciones():   #Funcion para mostra las instrucciones antes de inicar el juego
+    print("Instrucciones del juego Tragamonedas:\n")
+    print("1. Jala la palanca y espera a que salgan tres figuras.")   #Los prints mostraran la instrucciones y los premios que se pueden ganara dependiendo de lo que saque la maquina
+    print("2. Si son tres figuras iguales, ganas según el premio.")
+    print("3. Las figuras disponibles son: @, #, + y 7.")
+    print("4. Premios:")
+    print("   - Tres @ iguales: Recuperas tu dinero.")
+    print("   - Tres # iguales: Ganas el doble de tu apuesta.")
+    print("   - Tres + iguales: Ganas el triple de tu apuesta.")
+    print("   - Tres 7 iguales: Ganas el acumulado o reinicias.")
+    print(input("Presiona Enter para comenzar...\n"))
+
+def preguntarApuesta(saldo):
+    apuesta = 0   #Variable de apuesta inicial en 0
+    while apuesta <= 0 or apuesta > saldo:
+        try:
+            apuesta = int(input(f"Ingresa tu apuesta (saldo actual: {saldo}): "))
+        except ValueError:
+            print("Ingresa una apuesta válida.")
+    return apuesta
+
+def jugarTragamonedas(autenticado):
+    try:
+        archivo = open(autenticado+"deposito", "r")
+        contDeposito = archivo.read()
+        archivo.close()
+        saldo = float(contDeposito)
+ 
+    except FileNotFoundError:
+        print ("Archivo no encontrado")
+        submenuDreamWorld(autenticado)  
+
+    contadorJuegos = 0
+    acumulado = 500
+   
+    if os.path.exists("apuestaMinimaTM.txt"):
+        mostrarInstrucciones()
+        fileapuesta = open("apuestaMinimaTM.txt", "r")
+        contApuesta = fileapuesta.read()
+        fileapuesta.close()
+        apuestaMinima = float(contApuesta)
+        apuesta = preguntarApuesta(saldo)
+
+    else:
+        fileapuesta = open("apuestaMinimaTM.txt", "w")
+        fileapuesta.write("25")
+        fileapuesta.close()
+        fileapuesta = open("apuestaMinimaTM.txt", "r")
+        contApuesta = fileapuesta.read()
+        fileapuesta.close()
+        apuestaMinima = float(contApuesta)
+        mostrarInstrucciones()
+        apuesta = preguntarApuesta(saldo)
+
+    while True:
+        if saldo > apuestaMinima:
+            saldo -= apuesta
+            archivo = open(autenticado+"deposito", "w")
+            archivo.write(str(saldo))
+            archivo.close()
+
+            print("Jalando la palanca...")
+            time.sleep(1.5)
+            
+            figurasResultado = [random.choice(figuras) for _ in range(3)]
+            print("Este es el resultado:")
+            for i in range(1, 4):
+                print(" ".join(figurasResultado[:i]))
+                time.sleep(1.5)
+            
+            contadorJuegos += 1
+            if contadorJuegos % 20 == 0:
+                figuraGanadora = '7'
+                acumuladoGanado = acumulado
+                acumulado = 0
+                print("\n¡Tres 7 iguales! Ganaste el acumulado.")
+            elif contadorJuegos % 15 == 0:
+                figuraGanadora = '+'
+                print("\n¡Tres + iguales! Ganaste el triple de tu apuesta.")
+            elif contadorJuegos % 10 == 0:
+                figuraGanadora = '#'
+                print("\n¡Tres # iguales! Ganaste el doble de tu apuesta.")
+            elif contadorJuegos % 5 == 0:
+                figuraGanadora = '@'
+                print("\n¡Tres @ iguales! Recuperaste tu apuesta.")
+            else:
+                figuraGanadora = None
+                print("\nUsted no ganó.")
+            
+            if figuraGanadora:
+                premio = premios[figuraGanadora] * apuesta
+                if figuraGanadora == '7':
+                    acumulado = acumuladoGanado
+                saldo += premio
+            
+            print(f"Saldo actual: {saldo}")
+            
+            jugarOtraVez = input("¿Quieres jugar nuevamente? [si/no]: ")
+            if jugarOtraVez.lower() != 'si':
+                print("¡Gracias por jugar!")
+                submenuDreamWorld(autenticado)
+
+        elif saldo < apuestaMinima:
+            print("Saldo Insuficiente, usted tiene ${}, y ocupa como minimo ${} para poder jugar, haga un deposito en su cuenta".format(saldo , apuestaMinima))
+            submenuDreamWorld(autenticado)
+            break
 
 def configuracionAvanzada():
     pinConfgAvanzada = "1234"
