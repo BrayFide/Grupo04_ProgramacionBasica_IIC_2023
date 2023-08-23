@@ -2,11 +2,17 @@
 
 import getpass
 import os
-import time
+
 import random
+import time
+
 
 #Creacion de Funciones
 #Funcion para el registro de usuario (Aun en proceso)
+
+if not os.path.exists("deposito.txt"):
+    with open("deposito.txt", "w") as deposito_file:
+        deposito_file.write("2000")  
 
 
 def registrar_usuario():
@@ -15,6 +21,8 @@ def registrar_usuario():
     monto_minimo = int(file.read())
     file.close()
     intentos = 0
+
+    
     
     while intentos < intentos_max:
         usuario_id = input("Ingrese un nombre de usuario o ID: ")
@@ -191,6 +199,45 @@ def retirarDinero(autenticado):
             return
 
 
+def retirarDinero(autenticado):
+    global saldoActual
+    intentos = 3
+
+    try:
+        deposito = open(autenticado + "deposito", "r")
+        saldoActual = float(deposito.read())
+        deposito.close()
+    except FileNotFoundError:
+        print("Archivo de depósito no encontrado. Contacte al soporte.")
+        return
+
+    while intentos > 0:
+        try:
+            montoRetiro = float(input("Ingrese el monto que desea retirar: "))
+        except ValueError:
+            print("Por favor, ingrese un monto válido (número entero).")
+            continue
+
+        if montoRetiro <= 0:
+            print("El monto a retirar debe ser mayor que cero.")
+            continue
+
+        if montoRetiro > saldoActual:
+            intentos -= 1
+            print("Saldo insuficiente. Intentos restantes:", intentos)
+            if intentos == 0:
+                print("Has alcanzado el límite máximo de intentos fallidos.")
+                return
+        else:
+            saldoActual -= montoRetiro
+            print("Retiro exitoso. Saldo restante:", saldoActual)
+            # Guardar el nuevo saldo en el archivo de depósito
+            deposito = open(autenticado + "deposito", "w")
+            deposito.write(str(saldoActual))
+            deposito.close()
+            return
+
+
 def depositarDinero(autenticado):
     global saldoActual
 
@@ -202,48 +249,51 @@ def depositarDinero(autenticado):
         print("Archivo de depósito no encontrado. Contacte al soporte.")
         return
 
-    conversorDivisas = {}  # Movido aquí
+    conversorDivisas = {}
 
-    with open("conversorDeDivisas.txt", "r") as conversor_file:  # Corrección en el nombre del archivo
+    with open("conversorDeDivisas.txt", "r") as conversor_file:
         for line in conversor_file:
             moneda, valor = line.strip().split(":")
             conversorDivisas[moneda] = float(valor)
 
+    print("Monedas disponibles:")
+    opcionesMoneda = list(conversorDivisas.keys())
+    for i, moneda in enumerate(opcionesMoneda, start=1):
+        print(f"{i}. {moneda}")
+
     while True:
         try:
             opcionMoneda = int(input("¿En qué moneda desea depositar el dinero? "))
-            if opcionMoneda in range(1, len(conversorDivisas) + 1):
+            if opcionMoneda in range(1, len(opcionesMoneda) + 1):
                 break
             else:
                 print("Opción inválida. Intente nuevamente.")
         except ValueError:
             print("Ingrese un número válido.")
 
-    monedas = list(conversorDivisas.keys())
-    monedaSeleccionada = monedas[opcionMoneda - 1]
-
-    montoDeposito = float(input("Ingrese el monto a depositar: "))
-
-    if montoDeposito <= 0:
-        print("El monto debe ser un valor positivo. Intente nuevamente.")
-        return
+    monedaSeleccionada = opcionesMoneda[opcionMoneda - 1]
+    
+    while True:
+        try:
+            montoDeposito = float(input("Ingrese el monto a depositar: "))
+            if montoDeposito <= 0:
+                print("El monto debe ser mayor a 0. Intente nuevamente.")
+            else:
+                break
+        except ValueError:
+            print("Ingrese un monto válido.")
 
     tasaConversion = conversorDivisas[monedaSeleccionada]
     montoDepositoUsd = montoDeposito / tasaConversion
 
-    file = open("deposito.txt", "r")  #Tener el valor del deposito
-    monto_minimo = int(file.read())
-    if montoDepositoUsd >= monto_minimo:
-        saldoActual += montoDepositoUsd
+    saldoActual += montoDepositoUsd
 
-        archivoDeposito = open(autenticado + "deposito", "w")
-        archivoDeposito.write(str(saldoActual))
-        archivoDeposito.close()
+    archivoDeposito = open(autenticado + "deposito", "w")
+    archivoDeposito.write(str(saldoActual))
+    archivoDeposito.close()
 
-        print(f"Depósito exitoso. Saldo actual: {saldoActual:.2f} dólares.")
-    else:
-        print(f"El monto depositado es inferior al mínimo requerido.")
-    
+    print(f"Depósito exitoso en {monedaSeleccionada}. Saldo actual: {saldoActual:.2f} dólares.")
+
     # Actualizar valores de conversión en el diccionario y archivo
     conversorDivisas[monedaSeleccionada] = tasaConversion
     with open("conversorDeDivisas.txt", "w") as conversor_file:
@@ -251,11 +301,8 @@ def depositarDinero(autenticado):
             conversor_file.write(f"{moneda}:{valor}\n")
 
 
-    # Actualizar valores de conversión en el diccionario y archivo
-    conversorDivisas[monedaSeleccionada] = tasaConversion
-    with open("conversor_divisas.txt", "w") as conversor_file:
-        for moneda, valor in conversorDivisas.items():
-            conversor_file.write(f"{moneda}:{valor}\n")
+
+
 
 
 
@@ -507,65 +554,80 @@ def jugarTragamonedas(autenticado):
         apuesta = preguntarApuesta(saldo)
 
     while True:
+
         if saldo > apuestaMinima:
+
+
             while True:
                 if apuesta >= apuestaMinima:
-
                     saldo -= apuesta
                     archivo = open(autenticado+"deposito", "w")
                     archivo.write(str(saldo))
                     archivo.close()
-
                     print("Jalando la palanca...")
                     time.sleep(1.5)
-                    
+
                     figurasResultado = [random.choice(figuras) for _ in range(3)]
                     print("Este es el resultado:")
+
                     for i in range(1, 4):
+
                         print(" ".join(figurasResultado[:i]))
                         time.sleep(1.5)
-                    
+
                     contadorJuegos += 1
                     if contadorJuegos % 20 == 0:
                         figuraGanadora = '7'
                         acumuladoGanado = acumulado
                         acumulado = 0
                         print("\n¡Tres 7 iguales! Ganaste el acumulado.")
+
                     elif contadorJuegos % 15 == 0:
                         figuraGanadora = '+'
                         print("\n¡Tres + iguales! Ganaste el triple de tu apuesta.")
+
                     elif contadorJuegos % 10 == 0:
                         figuraGanadora = '#'
                         print("\n¡Tres # iguales! Ganaste el doble de tu apuesta.")
+
                     elif contadorJuegos % 5 == 0:
                         figuraGanadora = '@'
                         print("\n¡Tres @ iguales! Recuperaste tu apuesta.")
+
                     else:
                         figuraGanadora = None
                         print("\nUsted no ganó.")
-                    
+
                     if figuraGanadora:
                         premio = premios[figuraGanadora] * apuesta
+
                         if figuraGanadora == '7':
                             acumulado = acumuladoGanado
                         saldo += premio
-                    
+
                     print(f"Saldo actual: {saldo}")
-                    
+
                     jugarOtraVez = input("¿Quieres jugar nuevamente? [si/no]: ")
+
                     if jugarOtraVez.lower() != 'si':
+
                         print("¡Gracias por jugar!")
+
                         submenuDreamWorld(autenticado)
+
                 else:
-                
+
                     print("El monto minimo a apostar es de ${}".format(apuestaMinima))
+
                     jugarTragamonedas(autenticado)
-                
 
 
         elif saldo < apuestaMinima:
+
             print("Saldo Insuficiente, usted tiene ${}, y ocupa como minimo ${} para poder jugar, haga un deposito en su cuenta".format(saldo , apuestaMinima))
+
             submenuDreamWorld(autenticado)
+
             break
 
 def configuracionAvanzada():
@@ -595,8 +657,48 @@ def configuracionAvanzada():
         menu_Principal()
 
 
-def borrarUsuario():
-    print("Testing")
+def eliminarUsuario(autenticado):
+    if os.path.exists(f"{autenticado}.txt"): #2.    Verificar que haya al menos un usuario registrado
+                try:
+                    archivo = open(f"{autenticado}.txt", "r")
+                    pinRegistrado = archivo.read()
+                    archivo.close()
+                    solicitarPin = getpass.getpass(str("Ingrese su PIN \n"))
+           
+                    if solicitarPin in pinRegistrado:
+                        try:
+                            archivo = open(autenticado+"deposito", "r")
+                            contDeposito = archivo.read()
+                            archivo.close()
+                            saldo = float(contDeposito)
+
+                            print("Su saldo actual es :", saldo)
+
+                            while True:
+                                opcion = input("¿Desea jugar o retirar el dinero?\n 1.Jugar\n 2.Retirar dinero\n Ingrese su respuesta:")
+
+                                if opcion == "1":
+                                    menuJuegos(autenticado)
+                                    break
+                                elif opcion == "2":
+                                    retirarDinero(autenticado)
+                                    break
+                                else:
+                                    print("Opcion no valida")
+                                    submenuDreamWorld(autenticado)
+
+                        except FileNotFoundError:
+                            print ("Archivo no encontrado")
+                            submenuDreamWorld(autenticado)
+                        return
+ 
+                    else:
+                        print("Pin Incorrecto, volviendo al menu")
+                        submenuDreamWorld(autenticado)
+ 
+                except FileNotFoundError:
+                    print(f'El usuario "{autenticado}" no se encontró.')
+                    submenuDreamWorld(autenticado)  
 
 
 def valoresDelSistema():
@@ -612,18 +714,71 @@ def valoresDelSistema():
 
     if opcion == "a":
         print ("a. Tipo de cambio: Colones a Dolares/n")
+        nuevoTipoCambio = float(input("Ingrese el nuevo tipo de cambio de colones a dólares: "))
+        with open("conversorDeDivisas.txt", "r") as conversor_file:
+            lines = conversor_file.readlines()
+        
+        lines[0] = f"COL:{nuevoTipoCambio}\n"
+
+        with open("conversorDeDivisas.txt", "w") as conversor_file:
+            conversor_file.writelines(lines)
+
+        print("Tipo de cambio actualizado con éxito.")
+        valoresDelSistema()
         #Crear archivo con tipo de cambio y poder cambiarlo
     elif opcion == "b":
         print ("b. Tipo de cambio: Bitcoin a Dolares/n")
+        nuevoTipoCambio = float(input("Ingrese el nuevo tipo de cambio de bitcoins a dólares: "))
+        with open("conversorDeDivisas.txt", "r") as conversor_file:
+            lines = conversor_file.readlines()
+        
+        lines[1] = f"BTC:{nuevoTipoCambio}\n"
+
+        with open("conversorDeDivisas.txt", "w") as conversor_file:
+            conversor_file.writelines(lines)
+        print("Tipo de cambio actualizado con éxito.")
+        valoresDelSistema()
         #Crear archivo con tipo de cambio y poder cambiarlo
     elif opcion == "c":
         print ("c.	Valor acumulado Tragamonedas/n")
+        if not os.path.exists("acumuladoTM.txt"):
+            with open("acumuladoTM.txt", "w") as apuesta_file:
+                apuesta_file.write("25")  # Valor predeterminado
+
+        nuevoValorAcumulado = float(input("Ingrese el nuevo valor de la apuesta mínima para Tragamonedas: "))
+        with open("acumuladoTM.txt", "w") as apuesta_file:
+            apuesta_file.write(str(nuevoValorAcumulado))
+        
+        print("El acumulado del Tragamonedas fue actualizada con éxito.")
+        valoresDelSistema()
 
     elif opcion == "d":
         print ("d.	Apuesta mínima Tragamonedas/n")
 
+        if not os.path.exists("apuestaMinimaTM.txt"):
+            with open("apuestaMinimaTM.txt", "w") as apuesta_file:
+                apuesta_file.write("25")  # Valor predeterminado
+
+        nuevoValorApuesta = float(input("Ingrese el nuevo valor de la apuesta mínima para Tragamonedas: "))
+        with open("apuestaMinimaTM.txt", "w") as apuesta_file:
+            apuesta_file.write(str(nuevoValorApuesta))
+        
+        print("Apuesta mínima para Tragamonedas fue actualizada con éxito.")
+        valoresDelSistema()
+
     elif opcion == "e":
         print ("e.	Apuesta mínima Blackjack/n")
+
+        if not os.path.exists("apuestaMinima.txt"):
+            with open("apuestaMinimaTM.txt", "w") as apuesta_file:
+                apuesta_file.write("25")  # Valor predeterminado
+
+        nuevoValorApuesta = float(input("Ingrese el nuevo valor de la apuesta mínima para Blackjack: "))
+        with open("apuestaMinima.txt", "w") as apuesta_file:
+            apuesta_file.write(str(nuevoValorApuesta))
+        
+        print("Apuesta mínima para Blackjack fue actualizada con éxito.")
+        valoresDelSistema()
 
     elif opcion == "f":
         deposito = str(input("Ingrese el monto minimo del Deposito\n"))
@@ -662,7 +817,8 @@ def valoresDelSistema():
 
 
 def salir():
-    print ("Prueba 4")
+    if salir == "f":
+        print ("Prueba 4")
 #1.	Se sale del programa
 
 
@@ -716,13 +872,6 @@ def menu_Principal():
 
 print (menu_Principal())
     
-
-
-
-
-
-
-
 
 
 
