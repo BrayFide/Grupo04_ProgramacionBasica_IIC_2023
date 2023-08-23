@@ -2,8 +2,10 @@
 
 import getpass
 import os
+
 import random
 import time
+
 
 #Creacion de Funciones
 #Funcion para el registro de usuario (Aun en proceso)
@@ -80,7 +82,7 @@ def dreamWorldCasino():
                     archivo.close()
                     solicitarPin = getpass.getpass(str("Ingrese su PIN \n"))
                     if solicitarPin in pinRegistrado:
-                        print("Bienvenido")
+                        
                         submenuDreamWorld(userID)
 
                         return
@@ -108,7 +110,7 @@ def dreamWorldCasino():
 
 def submenuDreamWorld(autenticado):
     while True:
-        print("Bienvenido al menú:")
+        print("Bienvenido al menú del DreamWorld Casino:")
         print("a. Retirar Dinero")
         print("b. Depositar Dinero")
         print("c. Ver saldo actual")
@@ -133,7 +135,30 @@ def submenuDreamWorld(autenticado):
         else:
             print("Opción inválida. Por favor, ingresa una opción válida.")
 
+def eliminarUsuario(autenticado):
+   
+    
+    if os.path.exists(f"{autenticado}.txt"): #2.	Verificar que haya al menos un usuario registrado
+                try:
+                    archivo = open(f"{autenticado}.txt", "r") 
+                    pinRegistrado = archivo.read() 
+                    archivo.close()
+                    solicitarPin = getpass.getpass(str("Ingrese su PIN \n"))
+                
+                
+            
+                    if solicitarPin in pinRegistrado:
+                        print("eliminado")
 
+                        return
+
+                    else:
+                        print("Pin Incorrecto, volviendo al menu")
+                        submenuDreamWorld(autenticado)
+
+                except FileNotFoundError:
+                    print(f'El usuario "{autenticado}" no se encontró.')
+                    submenuDreamWorld(autenticado)      
 
 def retirarDinero(autenticado):
     global saldoActual
@@ -354,19 +379,20 @@ def blackjack(autenticado):
                 apuestaInicial = float(input("Ingrese el monto que quiere apostar"))
                 print ("Repartiendo cartas")
                 
-                while True:
-                    if apuestaInicial >= apuestaMinima:
-                        depositoUsuario -= apuestaInicial
-                        archivo = open(autenticado+"deposito", "w")
-                        archivo.write(str(depositoUsuario))
-                        archivo.close()
-                        repartirCartas(autenticado)
-                        break
-                    else:
-                        print("El monto minimo a apostar es de ${}".format(apuestaMinima))
-                        blackjack(autenticado)
-                        break
+                
+                if apuestaInicial >= apuestaMinima:
+                    depositoUsuario -= apuestaInicial
+                    archivo = open(autenticado+"deposito", "w")
+                    archivo.write(str(depositoUsuario))
+                    archivo.close()
+                    repartirCartas(autenticado)
 
+
+                       
+                else:
+                    print("El monto minimo a apostar es de ${}".format(apuestaMinima))
+                    blackjack(autenticado)
+                       
                 
 
             elif depositoUsuario < apuestaMinima:
@@ -429,8 +455,39 @@ def repartirCartas(usuarioAu):
             time.sleep(1.5)
             crupier.append(elejirCartaOculta())
             print("Carta Oculta")
+    print (usuario)
+    print (crupier)
+    
 
-    return(usuario,crupier)
+    carta1Usuario = usuario[0][0]  
+    carta2Usuario = usuario[1][0]  
+
+    
+
+    marcador = convertirCartaANumero(carta1Usuario) + convertirCartaANumero(carta2Usuario)
+
+    print("Su marcador es{}".format(marcador))
+
+    if marcador > 21:
+        print ("El crupier ganó")
+
+    elif marcador < 21:
+        continuar= input("Desea continuar?\n 1. Si\n 2. no\n")
+        if continuar == 1:
+            #repartir una carta
+            usuario.append(elejirCarta())
+
+        elif continuar == 2:
+
+        
+            print("Juego terminado")
+            submenuDreamWorld(usuarioAu)
+
+
+def convertirCartaANumero(carta):
+    if carta in ['J', 'Q', 'K']:
+        return 10
+    return int(carta)
 
 
     
@@ -500,6 +557,7 @@ def jugarTragamonedas(autenticado):
 
         if saldo > apuestaMinima:
 
+
             while True:
                 if apuesta >= apuestaMinima:
                     saldo -= apuesta
@@ -562,6 +620,7 @@ def jugarTragamonedas(autenticado):
                     print("El monto minimo a apostar es de ${}".format(apuestaMinima))
 
                     jugarTragamonedas(autenticado)
+
 
         elif saldo < apuestaMinima:
 
