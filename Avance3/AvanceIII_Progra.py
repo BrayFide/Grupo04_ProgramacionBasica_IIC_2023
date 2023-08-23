@@ -531,8 +531,48 @@ def configuracionAvanzada():
         menu_Principal()
 
 
-def borrarUsuario():
-    print("Testing")
+def eliminarUsuario(autenticado):
+    if os.path.exists(f"{autenticado}.txt"): #2.    Verificar que haya al menos un usuario registrado
+                try:
+                    archivo = open(f"{autenticado}.txt", "r")
+                    pinRegistrado = archivo.read()
+                    archivo.close()
+                    solicitarPin = getpass.getpass(str("Ingrese su PIN \n"))
+           
+                    if solicitarPin in pinRegistrado:
+                        try:
+                            archivo = open(autenticado+"deposito", "r")
+                            contDeposito = archivo.read()
+                            archivo.close()
+                            saldo = float(contDeposito)
+
+                            print("Su saldo actual es :", saldo)
+
+                            while True:
+                                opcion = input("¿Desea jugar o retirar el dinero?\n 1.Jugar\n 2.Retirar dinero\n Ingrese su respuesta:")
+
+                                if opcion == "1":
+                                    menuJuegos(autenticado)
+                                    break
+                                elif opcion == "2":
+                                    retirarDinero(autenticado)
+                                    break
+                                else:
+                                    print("Opcion no valida")
+                                    submenuDreamWorld(autenticado)
+
+                        except FileNotFoundError:
+                            print ("Archivo no encontrado")
+                            submenuDreamWorld(autenticado)
+                        return
+ 
+                    else:
+                        print("Pin Incorrecto, volviendo al menu")
+                        submenuDreamWorld(autenticado)
+ 
+                except FileNotFoundError:
+                    print(f'El usuario "{autenticado}" no se encontró.')
+                    submenuDreamWorld(autenticado)  
 
 
 def valoresDelSistema():
@@ -598,7 +638,8 @@ def valoresDelSistema():
 
 
 def salir():
-    print ("Prueba 4")
+    if salir == "f":
+        print ("Prueba 4")
 #1.	Se sale del programa
 
 
